@@ -1,9 +1,14 @@
 import sys
+from multiprocessing import reduction
+
 import numpy as np
 import torch.utils.data
+from torch import optim
 from torch.utils.data import TensorDataset
 from torchvision import transforms
 from torchvision import datasets
+import torch.nn as nn
+import torch.nn.functional as F
 class FirstNet(nn.Module):
     def __init__(self,image_size):
         super(FirstNet, self).__init__()
@@ -17,7 +22,16 @@ class FirstNet(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         return F.log_softmax(x)
-model = FirstNet(image_size=28*28)
+#model = FirstNet(image_size=28*28)
+def train(epoch, model,optimizer,train_loader):
+    model.train()
+    for batch_idx, (data, labels) in enumerate(train_loader):
+        optimizer.zero_grad()
+        output = model(data)
+        loss = F.nll_loss(output, labels, reduction =="sum")
+        loss.backward()
+        optimizer.step()
+
 x, y, testx, testy = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
 x = np.loadtxt(x)
 y = np.loadtxt(y)
@@ -83,4 +97,8 @@ testx = torch.from_numpy(testx)
 testy = torch.from_numpy(testy)
 train=TensorDataset(x, y)
 test=TensorDataset(testx, testy)
-c=0
+model = FirstNet(image_size=28*28)
+optimizer = optim.SGD(model.parameters(), lr=0.01)
+for epoch in range(1, 10 + 1):
+    train(epoch,model,optimizer,train)
+    test()
