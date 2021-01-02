@@ -11,9 +11,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-class FirstNet(nn.Module):
+class FirstNetC(nn.Module):
     def __init__(self, image_size):
-        super(FirstNet, self).__init__()
+        super(FirstNetC, self).__init__()
         self.image_size = image_size
         self.fc0 = nn.Linear(image_size, 100)
         self.fc1 = nn.Linear(100, 50)
@@ -31,6 +31,64 @@ class FirstNet(nn.Module):
         return F.log_softmax(x, dim=1)
 
 
+class FirstNet(nn.Module):
+    def __init__(self, image_size):
+        super(FirstNet, self).__init__()
+        self.image_size = image_size
+        self.fc0 = nn.Linear(image_size, 100)
+        self.fc1 = nn.Linear(100, 50)
+        self.fc2 = nn.Linear(50, 10)
+
+    def forward(self, x):
+        x = x.view(-1, self.image_size)
+        x = F.relu(self.fc0(x))
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        return F.log_softmax(x, dim=1)
+
+
+class FirstNetE(nn.Module):
+    def __init__(self, image_size):
+        super(FirstNetE, self).__init__()
+        self.image_size = image_size
+        self.fc0 = nn.Linear(image_size, 128)
+        self.fc1 = nn.Linear(128, 64)
+        self.fc2 = nn.Linear(64, 10)
+        self.fc3 = nn.Linear(10, 10)
+        self.fc4 = nn.Linear(10, 10)
+        self.fc5 = nn.Linear(10, 10)
+
+    def forward(self, x):
+        x = x.view(-1, self.image_size)
+        x = F.relu(self.fc0(x))
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = F.relu(self.fc3(x))
+        x = F.relu(self.fc4(x))
+        x = F.relu(self.fc5(x))
+        return F.log_softmax(x, dim=1)
+
+
+class FirstNetF(nn.Module):
+    def __init__(self, image_size):
+        super(FirstNetF, self).__init__()
+        self.image_size = image_size
+        self.fc0 = nn.Linear(image_size, 128)
+        self.fc1 = nn.Linear(128, 64)
+        self.fc2 = nn.Linear(64, 10)
+        self.fc3 = nn.Linear(10, 10)
+        self.fc4 = nn.Linear(10, 10)
+        self.fc5 = nn.Linear(10, 10)
+
+    def forward(self, x):
+        x = x.view(-1, self.image_size)
+        x = torch.sigmoid(self.fc0(x))
+        x = torch.sigmoid(self.fc1(x))
+        x = torch.sigmoid(self.fc2(x))
+        x = torch.sigmoid(self.fc3(x))
+        x = torch.sigmoid(self.fc4(x))
+        x = torch.sigmoid(self.fc5(x))
+        return F.log_softmax(x, dim=1)
 def train(epoch, model, optimizer, train_loader):
     model.train()
     for batch_idx, (data, labels) in enumerate(train_loader):
