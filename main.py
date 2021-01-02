@@ -20,7 +20,7 @@ class FirstNetC(nn.Module):
         self.fc2 = nn.Linear(50, 10)
 
     def forward(self, x):
-        d = nn.Dropout(p=0.5)
+        d = nn.Dropout(p=0.2)
         x = x.view(-1, self.image_size)
         x = F.relu(self.fc0(x))
         x = d(x)
@@ -30,6 +30,26 @@ class FirstNetC(nn.Module):
         x = d(x)
         return F.log_softmax(x, dim=1)
 
+"""
+class FirstNetD(nn.Module):
+    def __init__(self, image_size):
+        super(FirstNetD, self).__init__()
+        self.image_size = image_size
+        self.fc0 = nn.Linear(image_size, 100)
+        self.fc1 = nn.Linear(100, 50)
+        self.fc2 = nn.Linear(50, 10)
+
+    def forward(self, x):
+        d = nn.BatchNorm1d(100)
+        x = x.view(-1, self.image_size)
+        x = F.relu(self.fc0(x))
+        x = d(x)
+        x = F.relu(self.fc1(x))
+        x = d(x)
+        x = F.relu(self.fc2(x))
+        x = d(x)
+        return F.log_softmax(x, dim=1)
+"""
 
 class FirstNet(nn.Module):
     def __init__(self, image_size):
@@ -124,10 +144,38 @@ def main():
     test_loader = torch.utils.data.DataLoader(datasets.MNIST('./data', train=False, transform=transforms),
                                               batch_size=64, shuffle=True)
     model = FirstNet(image_size=28 * 28)
-    optimizer = optim.Adam(model.parameters(), lr=0.01)
+    modelC = FirstNetC(image_size=28 * 28)
+    # modelD = FirstNetD(image_size=28 * 28)
+    modelE = FirstNetE(image_size=28 * 28)
+    modelF = FirstNetF(image_size=28 * 28)
+    optimizerA = optim.SGD(model.parameters(), lr=0.01)
+    optimizerB = optim.Adam(model.parameters(), lr=0.01)
+    print("model A:")
     for epoch in range(1, 10 + 1):
-        train(epoch, model, optimizer, train_loader)
-        test(epoch, model,optimizer,test_loader)
+        train(epoch, model, optimizerA, train_loader)
+        test(epoch, model,optimizerA,test_loader)
+    print("model B:")
+    for epoch in range(1, 10 + 1):
+        train(epoch, model, optimizerB, train_loader)
+        test(epoch, model,optimizerB,test_loader)
+    print("model C:")
+    for epoch in range(1, 10 + 1):
+        train(epoch, modelC, optimizerA, train_loader)
+        test(epoch, modelC, optimizerA, test_loader)
+    print("model D:")
+    """
+    for epoch in range(1, 10 + 1):
+        train(epoch, modelD, optimizerA, train_loader)
+        test(epoch, modelD, optimizerA, test_loader)
+    """
+    print("model E:")
+    for epoch in range(1, 10 + 1):
+        train(epoch, modelE, optimizerA, train_loader)
+        test(epoch, modelE, optimizerA, test_loader)
+    print("model F:")
+    for epoch in range(1, 10 + 1):
+        train(epoch, modelF, optimizerA, train_loader)
+        test(epoch, modelF, optimizerA, test_loader)
     """
     
     x, y, testx, testy = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
