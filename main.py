@@ -150,6 +150,7 @@ def main():
     modelF = FirstNetF(image_size=28 * 28)
     optimizerA = optim.SGD(model.parameters(), lr=0.01)
     optimizerB = optim.Adam(model.parameters(), lr=0.01)
+
     print("model A:")
     for epoch in range(1, 10 + 1):
         train(epoch, model, optimizerA, train_loader)
@@ -173,6 +174,7 @@ def main():
         train(epoch, modelE, optimizerA, train_loader)
         test(epoch, modelE, optimizerA, test_loader)
     print("model F:")
+
     for epoch in range(1, 10 + 1):
         train(epoch, modelF, optimizerA, train_loader)
         test(epoch, modelF, optimizerA, test_loader)
